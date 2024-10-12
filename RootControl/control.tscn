@@ -164,6 +164,7 @@ render_target_update_mode = 0
 
 [node name="QuiltView" parent="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer/SubViewport" instance=ExtResource("11_tcqs8")]
 unique_name_in_owner = true
+visible = true
 
 [connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FlipButton" method="_on_main_control_button_disabled_state_changed"]
 [connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FileBrowseButton" method="_on_main_control_button_disabled_state_changed"]
