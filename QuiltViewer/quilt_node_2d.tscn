@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://ebdja2ywu3hr"]
+
+[ext_resource type="Script" path="res://QuiltViewer/quilt_node_2d.gd" id="1_m5dyn"]
+[ext_resource type="Texture2D" uid="uid://byq3uf7mv5bxl" path="res://QuiltViewer/quilt_placeholder_texture_2d.tres" id="1_nmspj"]
+[ext_resource type="Script" path="res://QuiltViewer/quilt_sprite_2d.gd" id="2_moxai"]
+
+[node name="QuiltNode2D" type="Node2D"]
+visible = false
+script = ExtResource("1_m5dyn")
+
+[node name="QuiltSprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_nmspj")
+script = ExtResource("2_moxai")
+
+[node name="Camera2D" type="Camera2D" parent="QuiltSprite2D"]

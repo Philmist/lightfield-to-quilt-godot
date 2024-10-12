@@ -1,0 +1,183 @@
+[gd_scene load_steps=17 format=3 uid="uid://1r0w7bw6rq6c"]
+
+[ext_resource type="Script" path="res://RootControl/main_control.gd" id="1_ddrqy"]
+[ext_resource type="Script" path="res://RootControl/file_browse_button.gd" id="1_g2wi3"]
+[ext_resource type="Theme" uid="uid://d3njq83a50nr1" path="res://themes/generated/light_theme.tres" id="1_il7i0"]
+[ext_resource type="Script" path="res://RootControl/horizontal_split_container.gd" id="3_0wcuc"]
+[ext_resource type="Script" path="res://RootControl/image_loading_progress_bar.gd" id="3_2qjsg"]
+[ext_resource type="PackedScene" uid="uid://cn6akxc3hcsq6" path="res://LightfieldView/lightfield_view.tscn" id="4_6hocq"]
+[ext_resource type="Script" path="res://RootControl/crop_option_button.gd" id="4_jf5bs"]
+[ext_resource type="Texture2D" uid="uid://8kfufwfdgtu3" path="res://RootControl/flip-horizontal-svgrepo-com.svg" id="4_svodw"]
+[ext_resource type="Script" path="res://RootControl/focus_slider.gd" id="5_d7swp"]
+[ext_resource type="Texture2D" uid="uid://nlxosvg1km0d" path="res://RootControl/image-picture-svgrepo-com.svg" id="5_km7y7"]
+[ext_resource type="Script" path="res://RootControl/flip_button.gd" id="5_s3x5i"]
+[ext_resource type="Script" path="res://RootControl/create_quilt_button.gd" id="10_hkuoo"]
+[ext_resource type="Script" path="res://RootControl/save_quilt_button.gd" id="11_5yhu6"]
+[ext_resource type="PackedScene" uid="uid://ebdja2ywu3hr" path="res://QuiltViewer/quilt_node_2d.tscn" id="11_tcqs8"]
+[ext_resource type="Script" path="res://RootControl/lightfield_sub_viewport_container.gd" id="12_g3yab"]
+[ext_resource type="Script" path="res://RootControl/quilt_sub_viewport_container.gd" id="13_g5h2e"]
+
+[node name="MainControl" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_il7i0")
+script = ExtResource("1_ddrqy")
+
+[node name="HorizontalSplitContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+script = ExtResource("3_0wcuc")
+
+[node name="InformationVBoxContainer" type="VBoxContainer" parent="HorizontalSplitContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="DescriptionLabel" type="Label" parent="HorizontalSplitContainer/InformationVBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="ButtonContainer" type="HBoxContainer" parent="HorizontalSplitContainer/InformationVBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="CropOptionButton" type="OptionButton" parent="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "NoCrop"
+popup/item_1/text = "Free"
+popup/item_1/id = 1
+popup/item_2/text = "Go"
+popup/item_2/id = 2
+popup/item_3/text = "Portrait"
+popup/item_3/id = 3
+script = ExtResource("4_jf5bs")
+
+[node name="FlipButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "Flip"
+icon = ExtResource("4_svodw")
+script = ExtResource("5_s3x5i")
+
+[node name="FileBrowseButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_stretch_ratio = 3.0
+text = "Select Images"
+icon = ExtResource("5_km7y7")
+script = ExtResource("1_g2wi3")
+
+[node name="FocusVBoxContainer" type="VBoxContainer" parent="HorizontalSplitContainer/InformationVBoxContainer"]
+layout_mode = 2
+
+[node name="FocusValueLabel" type="Label" parent="HorizontalSplitContainer/InformationVBoxContainer/FocusVBoxContainer"]
+layout_mode = 2
+
+[node name="FocusSlider" type="HSlider" parent="HorizontalSplitContainer/InformationVBoxContainer/FocusVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = -0.25
+max_value = 0.25
+step = 0.0
+value = -0.25
+tick_count = 5
+ticks_on_borders = true
+script = ExtResource("5_d7swp")
+
+[node name="ImageLoadingProgressBar" type="ProgressBar" parent="HorizontalSplitContainer/InformationVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_2qjsg")
+
+[node name="QuiltButtonHBoxContainer" type="HBoxContainer" parent="HorizontalSplitContainer/InformationVBoxContainer"]
+layout_mode = 2
+
+[node name="CreateQuiltButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Create Quilt"
+script = ExtResource("10_hkuoo")
+
+[node name="LKGButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer"]
+visible = false
+layout_mode = 2
+text = "LKG"
+
+[node name="SaveQuiltButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+disabled = true
+text = "Save Quilt"
+script = ExtResource("11_5yhu6")
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="HorizontalSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 2.0
+stretch_mode = 0
+
+[node name="LightfieldSubViewportContainer" type="SubViewportContainer" parent="HorizontalSplitContainer/AspectRatioContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch = true
+script = ExtResource("12_g3yab")
+
+[node name="SubViewport" type="SubViewport" parent="HorizontalSplitContainer/AspectRatioContainer/LightfieldSubViewportContainer"]
+handle_input_locally = false
+gui_disable_input = true
+size = Vector2i(2, 2)
+render_target_update_mode = 4
+
+[node name="CropGuideRect" type="ReferenceRect" parent="HorizontalSplitContainer/AspectRatioContainer/LightfieldSubViewportContainer/SubViewport"]
+visible = false
+z_index = -1
+offset_right = 50.0
+offset_bottom = 50.0
+border_width = 3.0
+editor_only = false
+
+[node name="LightfieldView" parent="HorizontalSplitContainer/AspectRatioContainer/LightfieldSubViewportContainer/SubViewport" instance=ExtResource("4_6hocq")]
+unique_name_in_owner = true
+
+[node name="QuiltSubViewportContainer" type="SubViewportContainer" parent="HorizontalSplitContainer/AspectRatioContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+stretch = true
+script = ExtResource("13_g5h2e")
+
+[node name="SubViewport" type="SubViewport" parent="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(2, 2)
+render_target_update_mode = 0
+
+[node name="QuiltView" parent="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer/SubViewport" instance=ExtResource("11_tcqs8")]
+unique_name_in_owner = true
+
+[connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FlipButton" method="_on_main_control_button_disabled_state_changed"]
+[connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FileBrowseButton" method="_on_main_control_button_disabled_state_changed"]
+[connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/FocusVBoxContainer/FocusSlider" method="_on_main_control_button_disabled_state_changed"]
+[connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/CreateQuiltButton" method="_on_main_control_button_disabled_state_changed"]
+[connection signal="button_disabled_state_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/SaveQuiltButton" method="_on_main_control_button_disabled_state_changed"]
+[connection signal="loading_progress_changed" from="." to="HorizontalSplitContainer/InformationVBoxContainer/ImageLoadingProgressBar" method="_on_main_control_loading_progress_changed"]
+[connection signal="item_selected" from="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/CropOptionButton" to="." method="_on_crop_option_button_item_selected"]
+[connection signal="pressed" from="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FlipButton" to="." method="_flip_images_order"]
+[connection signal="file_selected" from="HorizontalSplitContainer/InformationVBoxContainer/ButtonContainer/FileBrowseButton" to="." method="_on_file_browse_button_file_selected"]
+[connection signal="pressed" from="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/CreateQuiltButton" to="." method="_on_create_quilt_button_pressed"]
+[connection signal="file_selected" from="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/SaveQuiltButton" to="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer/SubViewport/QuiltView" method="save_quilt"]
+[connection signal="pressed" from="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/SaveQuiltButton" to="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/SaveQuiltButton" method="_on_pressed"]
+[connection signal="gui_input" from="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer" to="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer" method="_on_gui_input"]
+[connection signal="pressed" from="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer" to="." method="_on_quilt_viewer_pressed"]
+[connection signal="quilt_create_progress_changed" from="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer/SubViewport/QuiltView" to="HorizontalSplitContainer/InformationVBoxContainer/ImageLoadingProgressBar" method="_on_main_control_loading_progress_changed"]
+[connection signal="quilt_saved" from="HorizontalSplitContainer/AspectRatioContainer/QuiltSubViewportContainer/SubViewport/QuiltView" to="." method="_on_quilt_saved"]

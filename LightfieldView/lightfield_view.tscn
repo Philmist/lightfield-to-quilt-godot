@@ -1,0 +1,33 @@
+[gd_scene load_steps=8 format=3 uid="uid://cn6akxc3hcsq6"]
+
+[ext_resource type="Script" path="res://LightfieldView/lightfield_view.gd" id="1_8oqa1"]
+[ext_resource type="Shader" path="res://LightfieldView/lightfield_view.gdshader" id="2_qogut"]
+[ext_resource type="Script" path="res://LightfieldView/mesh_instance.gd" id="3_53gik"]
+[ext_resource type="CompressedTexture2DArray" uid="uid://cwme5iu6jtedm" path="res://LightfieldView/lightfield_4x4.jpg" id="3_bgewq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2seom"]
+render_priority = 0
+shader = ExtResource("2_qogut")
+shader_parameter/numberOfFrames = 16.0
+shader_parameter/aperture = 5.0
+shader_parameter/focus = null
+shader_parameter/s2DArray = ExtResource("3_bgewq")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_awqmh"]
+material = SubResource("ShaderMaterial_2seom")
+size = Vector2(1, 1)
+orientation = 2
+
+[sub_resource type="Environment" id="Environment_gu3lr"]
+
+[node name="LightfieldView" type="Node3D"]
+script = ExtResource("1_8oqa1")
+
+[node name="MeshInstance" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_awqmh")
+script = ExtResource("3_53gik")
+
+[node name="Camera" type="Camera3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gu3lr")
