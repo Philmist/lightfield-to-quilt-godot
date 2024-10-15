@@ -56,8 +56,12 @@ func _process(_delta: float) -> void:
 		%LightfieldSubViewportContainer.visible = true
 		load_end_msec = Time.get_ticks_msec()
 		button_disabled_state_changed.emit(false)
-		description_label.text += "Finished.\nElapsed: %s msec\n" % (load_end_msec - load_start_msec)
+		if len(images) == 0:
+			description_label.text += "Image Loading is failed.\n"
+			state = QuiltImageState.NONE
+			return
 		var frame_size := images[0].get_size()
+		description_label.text += "Finished.\nElapsed: %s msec\n" % (load_end_msec - load_start_msec)
 		var sqrt_pixels := sqrt(frame_size.x * frame_size.y * len(images))
 		lightfield_viewport.image_pixels = frame_size
 		if quilt_scene.IMAGE_MAX_SIDE_PIXEL < sqrt_pixels:
@@ -121,7 +125,16 @@ func _image_load_process(files: PackedStringArray) -> void:
 	var percent: float = 0.0
 	files.sort()
 	for i in range(len(files)):
-		var image = Image.load_from_file(files[i])
+		var image = Image.new()
+		var err: Error = image.load(files[i])
+		if err:
+			var err_str = "Image load err: %d(%s)" % [err, error_string(err)]
+			printerr(err_str)
+			description_label.text = err_str + "\n"
+			loading_progress_changed.emit.call_deferred(0.0)
+			images.clear()
+			textures = null
+			return
 		image_load_mutex.lock()
 		images.append(image)
 		image_load_mutex.unlock()
