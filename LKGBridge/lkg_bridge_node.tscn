@@ -4,3 +4,4 @@
 
 [node name="LKGBridgeNode" type="Node"]
 script = ExtResource("1_6es6m")
+orchestration_string = null

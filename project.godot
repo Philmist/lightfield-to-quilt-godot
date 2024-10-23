@@ -15,6 +15,11 @@ run/main_scene="res://RootControl/control.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://Resource/icon.svg"
 
+[editor]
+
+version_control/plugin_name="GitPlugin"
+version_control/autoload_on_startup=true
+
 [gui]
 
 theme/custom="res://themes/generated/light_theme.tres"
