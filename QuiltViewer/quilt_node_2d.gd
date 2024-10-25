@@ -63,13 +63,20 @@ func create_quilt(crop: Rect2i = Rect2i()) -> void:
 		crop_rect.end.x,
 		crop_rect.end.y
 		])
-	var sqrt_total_pixels = sqrt(crop_rect.size.x * crop_rect.size.y * quilt_frames_length)
-	var column_num: int = ceil(sqrt_total_pixels / float(crop_rect.size.x))
-	var row_num: int = ceil(quilt_frames_length / float(column_num))
-	quilt_view_size = Vector2i(column_num, row_num)
+	var sqrt_frames := ceilf(sqrt(quilt_frames_length))
+	quilt_view_size = Vector2i(sqrt_frames, ceilf(quilt_frames_length / sqrt_frames))
 	quilt_image_size = Vector2i(
 		quilt_view_size.x * crop_rect.size.x,
 		quilt_view_size.y * crop_rect.size.y
+	)
+	if quilt_image_size.x >= IMAGE_MAX_SIDE_PIXEL or quilt_image_size.y >= IMAGE_MAX_SIDE_PIXEL:
+		var sqrt_total_pixels = sqrt(crop_rect.size.x * crop_rect.size.y * quilt_frames_length)
+		var column_num: int = ceil(sqrt_total_pixels / float(crop_rect.size.x))
+		var row_num: int = ceil(quilt_frames_length / float(column_num))
+		quilt_view_size = Vector2i(column_num, row_num)
+		quilt_image_size = Vector2i(
+			quilt_view_size.x * crop_rect.size.x,
+			quilt_view_size.y * crop_rect.size.y
 		)
 	quilt_create_progress_changed.emit.call_deferred(0.0)
 	quilt_mutex.lock()

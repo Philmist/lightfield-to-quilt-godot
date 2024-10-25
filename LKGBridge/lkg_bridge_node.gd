@@ -25,8 +25,7 @@ func test_is_bridge_alive() -> bool:
 
 signal bridge_alive_checked(result: bool)
 
-func _http_is_bridge_alive(result, response_code, _headers, _body):
-	print(response_code)
+func _http_is_bridge_alive(result, _response_code, _headers, _body):
 	http.request_completed.disconnect(_http_is_bridge_alive)
 	http.queue_free()
 	http = null
@@ -37,6 +36,37 @@ func _http_is_bridge_alive(result, response_code, _headers, _body):
 		print("LKG Bridge is alive.")
 		bridge_alive_checked.emit(true)
 
+func get_bridge_version() -> bool:
+	if !_http_request_helper(_got_bridge_version):
+		return false
+	var err := http.request(
+			LKG_HOST + "bridge_version",
+			PackedStringArray(["Content-Type: application/json"]),
+			HTTPClient.METHOD_PUT,
+			"{}"
+		)
+	if err != OK:
+		printerr("Something wrong at getting bridge version. [%s]" % error_string(err))
+		return false
+	return true
+
+signal got_bridge_version(version: String)
+
+func _got_bridge_version(result, response_code, _headers, body) -> void:
+	var b = PackedByteArray(body)
+	print("/bridge_version: code [%d]" % response_code)
+	http.request_completed.disconnect(_got_bridge_version)
+	http.queue_free()
+	http = null
+	if result != HTTPRequest.Result.RESULT_SUCCESS:
+		printerr("Can't got bridge version.")
+		got_bridge_version.emit("0.0.0")
+	else:
+		var s = b.get_string_from_utf8()
+		var json_obj = JSON.parse_string(s)
+		print(json_obj["payload"]["value"])
+		got_bridge_version.emit(json_obj["payload"]["value"])
+
 func enter_orchestration() -> bool:
 	if !_http_request_helper(_process_enter_orchestration):
 		enter_orchestration_failed.emit()
@@ -45,16 +75,16 @@ func enter_orchestration() -> bool:
 		"name": orchestration_string
 	})
 	var err := http.request(
-		LKG_HOST + "enter_orchestration",
-		PackedStringArray(),
-		HTTPClient.METHOD_POST,
-		json_str
+			LKG_HOST + "enter_orchestration",
+			PackedStringArray(["Content-Type: application/json"]),
+			HTTPClient.METHOD_PUT,
+			json_str
 		)
 	if err != OK:
 		printerr("Something wrong with HTTP request to enter orchestration. [%s]" % [error_string(err)])
 	return true
 
-signal enter_orchestration_succeeded(status: String)
+signal enter_orchestration_succeeded
 signal enter_orchestration_failed
 
 func _process_enter_orchestration(result, response_code, _headers, body):
@@ -69,7 +99,10 @@ func _process_enter_orchestration(result, response_code, _headers, body):
 		printerr("Failed to enter orchestration: HTTP code %d" % response_code)
 		enter_orchestration_failed.emit()
 		return
-	var json_obj = JSON.parse_string(body.get_string_from_utf8()) as Dictionary
+	var s = body.get_string_from_utf8()
+	var json_obj = JSON.parse_string(s)
+	print("got json [enter]:")
+	print(JSON.stringify(json_obj, "  "))
 	if json_obj == null:
 		printerr("Parsing json failed.")
 		enter_orchestration_failed.emit()
@@ -84,8 +117,7 @@ func _process_enter_orchestration(result, response_code, _headers, body):
 		enter_orchestration_failed.emit()
 		return
 	_orchestration_token = String(json_obj["payload"]["value"])
-	var status = String(json_obj["status"]["value"])
-	enter_orchestration_succeeded.emit(status)
+	enter_orchestration_succeeded.emit()
 	return
 
 func exit_orchestration() -> bool:
@@ -96,13 +128,24 @@ func exit_orchestration() -> bool:
 		"orchestration": _orchestration_token
 	})
 	var err := http.request(
-		LKG_HOST + "exit_orchestration"
+		LKG_HOST + "exit_orchestration",
+		PackedStringArray(["Content-Type: application/json"]),
+		HTTPClient.METHOD_PUT,
+		json_str
 	)
 	return true
 
-func _process_exit_orchestration(_result, _code, _headers, _body):
+signal exited_orchestration
+
+func _process_exit_orchestration(_result, _code, _headers, body):
 	http.request_completed.disconnect(_process_exit_orchestration)
 	_orchestration_token = ""
 	http.queue_free()
 	http = null
+	var s = body.get_string_from_utf8()
+	var j = JSON.parse_string(s)
+	print("got json [exit]:")
+	print(JSON.stringify(j, "  "))
+	#print(_body.get_string_from_utf8())
+	exited_orchestration.emit()
 	return

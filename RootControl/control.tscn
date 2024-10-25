@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://1r0w7bw6rq6c"]
+[gd_scene load_steps=19 format=3 uid="uid://1r0w7bw6rq6c"]
 
 [ext_resource type="Script" path="res://RootControl/main_control.gd" id="1_ddrqy"]
 [ext_resource type="Script" path="res://RootControl/file_browse_button.gd" id="1_g2wi3"]
@@ -15,7 +15,9 @@
 [ext_resource type="Script" path="res://RootControl/save_quilt_button.gd" id="11_5yhu6"]
 [ext_resource type="PackedScene" uid="uid://ebdja2ywu3hr" path="res://QuiltViewer/quilt_node_2d.tscn" id="11_tcqs8"]
 [ext_resource type="Script" path="res://RootControl/lightfield_sub_viewport_container.gd" id="12_g3yab"]
+[ext_resource type="Script" path="res://RootControl/lkg_button.gd" id="12_qpynx"]
 [ext_resource type="Script" path="res://RootControl/quilt_sub_viewport_container.gd" id="13_g5h2e"]
+[ext_resource type="PackedScene" uid="uid://c6w76har5mqpp" path="res://LKGBridge/lkg_bridge_node.tscn" id="13_qqvvb"]
 
 [node name="MainControl" type="HBoxContainer"]
 anchors_preset = 15
@@ -108,9 +110,12 @@ text = "Create Quilt"
 script = ExtResource("10_hkuoo")
 
 [node name="LKGButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer"]
-visible = false
+unique_name_in_owner = true
 layout_mode = 2
 text = "LKG"
+script = ExtResource("12_qpynx")
+
+[node name="LKGBridgeNode" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/LKGButton" instance=ExtResource("13_qqvvb")]
 
 [node name="SaveQuiltButton" type="Button" parent="HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer"]
 unique_name_in_owner = true

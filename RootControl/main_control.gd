@@ -27,9 +27,9 @@ var load_end_msec: float
 @onready var get_crop_option: Callable = %CropOptionButton.get_crop_option
 var quilt_create_thread: Thread
 var state: QuiltImageState
-@onready var _lkg_bridge_scene: PackedScene = load("res://LKGBridge/lkg_bridge_node.tscn")
+#@onready var _lkg_bridge_scene: PackedScene = load("res://LKGBridge/lkg_bridge_node.tscn")
 var lkg_bridge
-@onready var lkg_bridge_button = $HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/LKGButton
+#@onready var lkg_bridge_button = $HorizontalSplitContainer/InformationVBoxContainer/QuiltButtonHBoxContainer/LKGButton
 const FOCUS_SCALE = 10.0
 
 # Called when the node enters the scene tree for the first time.
@@ -42,9 +42,9 @@ func _ready() -> void:
 	state = QuiltImageState.NONE
 	slider.value = 0.0
 	get_viewport().files_dropped.connect(_on_files_dropped)
-	lkg_bridge = _lkg_bridge_scene.instantiate()
-	add_child(lkg_bridge)
-	lkg_bridge_button.pressed.connect(lkg_bridge.test_is_bridge_alive)
+	#lkg_bridge = _lkg_bridge_scene.instantiate()
+	#add_child(lkg_bridge)
+	#lkg_bridge_button.pressed.connect(lkg_bridge.test_is_bridge_alive)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
