@@ -14,6 +14,7 @@ signal quilt_create_progress_changed(percent: float)
 signal quilt_saved
 
 const IMAGE_MAX_SIDE_PIXEL := 16384
+@export var MAX_SIDE_RATIO: float = 1.6
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -23,6 +24,47 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+func _is_less_than_max_pixels(sides: Vector2) -> bool:
+	var max_side = maxf(sides.x, sides.y)
+	return max_side < IMAGE_MAX_SIDE_PIXEL
+
+func find_optimal_quilt(frames: float, frame_size: Vector2) -> Vector2:
+	# Pattern 1
+	var n := ceilf(frames)
+	var factors: Array = []
+	for i in range(1, ceili(sqrt(n)) + 1):
+		if int(n) % i != 0:
+			continue
+		factors.push_back([i, int(n / i), abs(i - int(n / i))])
+	var optimal_value: int = factors.reduce(func(prev, next): return min(prev, next[2]), 1000000)
+	var optimal_index: int = factors.find(optimal_value)
+	var optimal = factors[optimal_index]
+	var quilt_size: Vector2 = Vector2(
+		float(optimal[0]) * frame_size.x,
+		float(optimal[1]) * frame_size.y
+		)
+	var max_quilt := Vector2(IMAGE_MAX_SIDE_PIXEL, IMAGE_MAX_SIDE_PIXEL).max(quilt_size)
+	var max_side := maxf(max_quilt.x, max_quilt.y)
+	if (_is_less_than_max_pixels(max_quilt)) and \
+	((max(optimal[0], optimal[1]) / min(optimal[0], optimal[1])) <= 1.7):
+		return Vector2(optimal[0], optimal[1])
+	# Pattern 2
+	var ceil_sqrt_frames := ceilf(sqrt(frames))
+	var quilt_num := Vector2(ceil_sqrt_frames, ceilf(frames / ceil_sqrt_frames))
+	quilt_size = Vector2(
+		quilt_num.x * frame_size.x,
+		quilt_num.y * frame_size.y
+	)
+	if _is_less_than_max_pixels(quilt_size):
+		return Vector2(quilt_num)
+	var sqrt_total_pixels := sqrt(frames * frame_size.x * frame_size.y)
+	quilt_num = Vector2(
+		ceilf(sqrt_total_pixels / frame_size.x),
+		0.0
+	)
+	quilt_num.y = ceilf(frames / quilt_num.x)
+	return quilt_num
 
 func create_quilt(crop: Rect2i = Rect2i()) -> void:
 	if len(images) < 2:
@@ -63,21 +105,17 @@ func create_quilt(crop: Rect2i = Rect2i()) -> void:
 		crop_rect.end.x,
 		crop_rect.end.y
 		])
-	var sqrt_frames := ceilf(sqrt(quilt_frames_length))
-	quilt_view_size = Vector2i(sqrt_frames, ceilf(quilt_frames_length / sqrt_frames))
+	var frame_size := Vector2(crop_rect.size)
+	var quilt_view_size_candidate := find_optimal_quilt(quilt_frames_length, frame_size)
+	var i_qv_c := Vector2i(quilt_view_size_candidate)
+	var sqrt_total_pixels = sqrt(crop_rect.size.x * crop_rect.size.y * quilt_frames_length)
+	var column_num: int = i_qv_c.x
+	var row_num: int = i_qv_c.y
+	quilt_view_size = Vector2i(quilt_view_size_candidate)
 	quilt_image_size = Vector2i(
 		quilt_view_size.x * crop_rect.size.x,
 		quilt_view_size.y * crop_rect.size.y
 	)
-	if quilt_image_size.x >= IMAGE_MAX_SIDE_PIXEL or quilt_image_size.y >= IMAGE_MAX_SIDE_PIXEL:
-		var sqrt_total_pixels = sqrt(crop_rect.size.x * crop_rect.size.y * quilt_frames_length)
-		var column_num: int = ceil(sqrt_total_pixels / float(crop_rect.size.x))
-		var row_num: int = ceil(quilt_frames_length / float(column_num))
-		quilt_view_size = Vector2i(column_num, row_num)
-		quilt_image_size = Vector2i(
-			quilt_view_size.x * crop_rect.size.x,
-			quilt_view_size.y * crop_rect.size.y
-		)
 	quilt_create_progress_changed.emit.call_deferred(0.0)
 	quilt_mutex.lock()
 	quilt_image = Image.create_empty(quilt_image_size.x, quilt_image_size.y, false, format)
