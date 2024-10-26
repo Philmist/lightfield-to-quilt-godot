@@ -101,8 +101,8 @@ func _process_enter_orchestration(result, response_code, _headers, body):
 		return
 	var s = body.get_string_from_utf8()
 	var json_obj = JSON.parse_string(s)
-	print("got json [enter]:")
-	print(JSON.stringify(json_obj, "  "))
+	#print("got json [enter]:")
+	#print(JSON.stringify(json_obj, "  "))
 	if json_obj == null:
 		printerr("Parsing json failed.")
 		enter_orchestration_failed.emit()
@@ -117,6 +117,7 @@ func _process_enter_orchestration(result, response_code, _headers, body):
 		enter_orchestration_failed.emit()
 		return
 	_orchestration_token = String(json_obj["payload"]["value"])
+	print("got orchestration token: %s" % [_orchestration_token])
 	enter_orchestration_succeeded.emit()
 	return
 
