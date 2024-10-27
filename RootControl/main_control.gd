@@ -42,6 +42,7 @@ func _ready() -> void:
 	state = QuiltImageState.NONE
 	slider.value = 0.0
 	get_viewport().files_dropped.connect(_on_files_dropped)
+	randomize()
 	#lkg_bridge = _lkg_bridge_scene.instantiate()
 	#add_child(lkg_bridge)
 	#lkg_bridge_button.pressed.connect(lkg_bridge.test_is_bridge_alive)

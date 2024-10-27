@@ -7,6 +7,19 @@ var _orchestration_token: String = ""
 
 @export var orchestration_string: String = "default"
 
+@export var playlists_name: Array[String] = ["front", "back"]
+@onready var rng := RandomNumberGenerator.new()
+var _salt: String
+var _hashed_playlists_name: Array[String] = []
+var _current_cast_playlist: int = 0
+
+func _ready() -> void:
+	_salt = str(rng.randi_range(1000000, 9999999))
+	for i in range(len(playlists_name)):
+		var source := _salt + playlists_name[i]
+		var target := source.hash()
+		_hashed_playlists_name.push_back(str(target).left(10))
+
 func _http_request_helper(sig: Callable) -> bool:
 	if http:
 		return false
@@ -14,6 +27,18 @@ func _http_request_helper(sig: Callable) -> bool:
 	self.add_child(http)
 	http.request_completed.connect(sig)
 	return true
+
+func _request(endpoint: String, data: Dictionary = {}) -> Error:
+	const METHOD = HTTPClient.METHOD_PUT
+	var header = PackedStringArray([
+		"Content-Type: application/json; charset=utf-8"
+	])
+	endpoint = endpoint.lstrip("/ ")
+	endpoint = endpoint.rstrip("/ ")
+	var uri = LKG_HOST + endpoint
+	var json_str := JSON.stringify(data)
+	var err := http.request(uri, header, METHOD, json_str)
+	return err
 
 func test_is_bridge_alive() -> bool:
 	if !_http_request_helper(_http_is_bridge_alive):
@@ -125,15 +150,8 @@ func exit_orchestration() -> bool:
 	if !_http_request_helper(_process_exit_orchestration):
 		printerr("Can't exit orchetration because creating http request is failed.")
 		return false
-	var json_str := JSON.stringify({
-		"orchestration": _orchestration_token
-	})
-	var err := http.request(
-		LKG_HOST + "exit_orchestration",
-		PackedStringArray(["Content-Type: application/json"]),
-		HTTPClient.METHOD_PUT,
-		json_str
-	)
+	var payload = { "orchestration": _orchestration_token }
+	var _err := _request("exit_orchestration", payload)
 	return true
 
 signal exited_orchestration
