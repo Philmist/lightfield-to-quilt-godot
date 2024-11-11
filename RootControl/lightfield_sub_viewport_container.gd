@@ -98,16 +98,17 @@ func _set_rect_with_mouse() -> void:
 		elif (crop.size.y * aspect) < crop.size.x:
 			crop.size.y = crop.size.x / aspect
 		crop.position = mouse_pos.min(_origin)
-	crop.position = crop.position.clamp(Vector2.ZERO, crop.position)
-	crop.end = crop.end.clamp(crop.end, vp_r.end)
-	if keep_aspect_ratio:
-		var aspect = _calc_aspect_ratio()
-		if ((crop.end.x - vp_r.end.x) < 0.001) or ((crop.position.x - Vector2.ZERO.x) < 0.001):
-			crop.size.x = crop.size.y * aspect
-		elif ((crop.end.y - vp_r.end.y) < 0.001) or ((crop.end.y - Vector2.ZERO.y) < 0.001):
-			crop.size.y = crop.size.x / aspect
-	CropRect.size = crop.size
-	CropRect.position = crop.position
+		var clamped_rect = Rect2(crop)
+		clamped_rect.position = crop.position.clamp(Vector2.ZERO, crop.position)
+		clamped_rect.end = crop.end.clamp(crop.end, vp_r.end)
+		if (clamped_rect == crop):
+			CropRect.size = crop.size
+			CropRect.position = crop.position
+	else:
+		crop.position = crop.position.clamp(Vector2.ZERO, crop.position)
+		crop.end = crop.end.clamp(crop.end, vp_r.end)
+		CropRect.size = crop.size
+		CropRect.position = crop.position
 	_set_crop_rect_percentage()
 
 func reset_crop_rect() -> void:

@@ -84,7 +84,7 @@ func create_quilt(crop: Rect2i = Rect2i()) -> void:
 	elif (crop_rect.position.x < 0 or crop_rect.position.y < 0):
 		print("Crop start position is invalid.")
 		return
-	elif (crop_rect.end.x >= image_size.x or crop_rect.end.y >= image_size.y):
+	elif (crop_rect.end.x > image_size.x or crop_rect.end.y > image_size.y):
 		print("Crop end position is invalid.")
 		return
 	frame_size = crop_rect.size

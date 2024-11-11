@@ -189,7 +189,7 @@ func _on_create_quilt_button_pressed() -> void:
 	if crop_option.enable == true:
 		var size = images[0].get_size()
 		crop_pixels.position = Vector2i((Vector2(size) * (crop_percentage.position / 100.0)).floor())
-		crop_pixels.end = Vector2i((Vector2(size) * (crop_percentage.end / 100.0)).ceil())
+		crop_pixels.end = Vector2i((Vector2(size) * (crop_percentage.end / 100.0)).floor())
 	load_start_msec = Time.get_ticks_msec()
 	var qv_func: Callable = %QuiltView.create_quilt.bind(crop_pixels)
 	quilt_create_thread.start(qv_func)
