@@ -29,30 +29,48 @@ func _is_less_than_max_pixels(sides: Vector2) -> bool:
 	var max_side = maxf(sides.x, sides.y)
 	return max_side < IMAGE_MAX_SIDE_PIXEL
 
+class _OptimalStore:
+	var divisor: Vector2i = Vector2i(-1, -1)
+	var diff_frames: int = 100000
+	var diff_divisor: int = 100000
+
+func calc_quilt_size(quilt_size: Vector2i, frame_size: Vector2) -> Vector2:
+	var fquilt = Vector2(quilt_size)
+	return Vector2(
+		fquilt.x * frame_size.x,
+		fquilt.y * frame_size.y
+	)
+
 func find_optimal_quilt(frames: float, frame_size: Vector2) -> Vector2:
-	# Pattern 1
 	var n := ceilf(frames)
-	var factors: Array = []
+	# Pattern 1
+	var factors: Array[_OptimalStore] = []
 	for i in range(1, ceili(sqrt(n)) + 1):
 		if int(n) % i != 0:
 			continue
-		factors.push_back([i, int(n / i), abs(i - int(n / i))])
-	var optimal_value: int = factors.reduce(func(prev, next): return min(prev, next[2]), 1000000)
-	var optimal_index: int = factors.find(optimal_value)
-	var optimal = factors[optimal_index]
-	var quilt_size: Vector2 = Vector2(
-		float(optimal[0]) * frame_size.x,
-		float(optimal[1]) * frame_size.y
-		)
-	var max_quilt := Vector2(IMAGE_MAX_SIDE_PIXEL, IMAGE_MAX_SIDE_PIXEL).max(quilt_size)
-	var max_side := maxf(max_quilt.x, max_quilt.y)
-	if (_is_less_than_max_pixels(max_quilt)) and \
-	((max(optimal[0], optimal[1]) / min(optimal[0], optimal[1])) <= 1.7):
-		return Vector2(optimal[0], optimal[1])
-	# Pattern 2
+		var factor := _OptimalStore.new()
+		factor.divisor = Vector2i(i, int(n / i))
+		factor.diff_frames = factor.divisor.x * factor.divisor.y - int(frames)
+		factor.diff_divisor = abs(factor.divisor.x - factor.divisor.y)
+		factors.push_back(factor)
+	# Pattern 1-1: Use diff of frames
+	factors.sort_custom(func(lv: _OptimalStore, rv: _OptimalStore): return lv.diff_frames < rv.diff_frames)
+	var f_factor = Vector2(factors[0].divisor)
+	if (max(f_factor.x, f_factor.y) / min(f_factor.x, f_factor.y)) <= MAX_SIDE_RATIO:
+		var overall_quilt_size := calc_quilt_size(factors[0].divisor, frame_size)
+		if _is_less_than_max_pixels(overall_quilt_size):
+			return Vector2(factors[0].divisor)
+	# Pattern 1-2: Use diff of divisor(factor)
+	factors.sort_custom(func(lv: _OptimalStore, rv: _OptimalStore): return lv.diff_divisor < rv.diff_divisor)
+	f_factor = Vector2(factors[0].divisor)
+	if (max(f_factor.x, f_factor.y) / min(f_factor.x, f_factor.y)) <= MAX_SIDE_RATIO:
+		var overall_quilt_size := calc_quilt_size(factors[0].divisor, frame_size)
+		if _is_less_than_max_pixels(overall_quilt_size):
+			return Vector2(factors[0].divisor)
+	# Pattern 2: Use sqrt of total pixels
 	var ceil_sqrt_frames := ceilf(sqrt(frames))
 	var quilt_num := Vector2(ceil_sqrt_frames, ceilf(frames / ceil_sqrt_frames))
-	quilt_size = Vector2(
+	var quilt_size = Vector2(
 		quilt_num.x * frame_size.x,
 		quilt_num.y * frame_size.y
 	)

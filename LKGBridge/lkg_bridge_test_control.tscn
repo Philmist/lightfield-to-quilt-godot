@@ -1,0 +1,88 @@
+[gd_scene load_steps=8 format=3 uid="uid://57nfdg2b5h3a"]
+
+[ext_resource type="Theme" uid="uid://d3njq83a50nr1" path="res://themes/generated/light_theme.tres" id="1_kwoh3"]
+[ext_resource type="Script" path="res://LKGBridge/lkg_bridge_test_control.gd" id="2_4l16s"]
+[ext_resource type="PackedScene" uid="uid://c6w76har5mqpp" path="res://LKGBridge/lkg_bridge_node.tscn" id="2_fy04y"]
+[ext_resource type="Script" path="res://LKGBridge/ping_button.gd" id="3_n05ae"]
+[ext_resource type="Script" path="res://LKGBridge/get_bridge_version_button.gd" id="4_0g77e"]
+[ext_resource type="Script" path="res://LKGBridge/orchestration_button.gd" id="5_3esbg"]
+[ext_resource type="Script" path="res://LKGBridge/query_device_button.gd" id="6_f8573"]
+
+[node name="LKGBridgeTestControl" type="Control"]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_kwoh3")
+script = ExtResource("2_4l16s")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(100, 100)
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 100)
+layout_direction = 1
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+focus_mode = 2
+bbcode_enabled = true
+text = "Initilized."
+scroll_following = true
+selection_enabled = true
+visible_characters_behavior = 2
+
+[node name="VFlowContainer" type="VFlowContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="TextClearButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "CLEAR TEXT"
+
+[node name="DebugCheckButton" type="CheckButton" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+button_pressed = true
+text = "DEBUG"
+
+[node name="PingButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "PING"
+script = ExtResource("3_n05ae")
+
+[node name="GetBridgeVersionButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "GET VERSION"
+script = ExtResource("4_0g77e")
+
+[node name="OrchestrationButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "ORCHESTRATION"
+script = ExtResource("5_3esbg")
+
+[node name="QueryDeviceButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "QUERY DEVICES"
+script = ExtResource("6_f8573")
+
+[node name="PlaylistButton" type="Button" parent="HBoxContainer/VFlowContainer"]
+layout_mode = 2
+text = "CREATE PLAYLIST"
+
+[node name="LKGBridgeNode" parent="." instance=ExtResource("2_fy04y")]
+unique_name_in_owner = true
